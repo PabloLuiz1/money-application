@@ -6,6 +6,7 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.ManyToOne
 
 @Entity
 class InvestmentRate(
@@ -18,7 +19,10 @@ class InvestmentRate(
     val description: String,
 
     @Column(nullable = false)
-    val percentage: Double
+    val percentage: Double,
+
+    @ManyToOne
+    val status: InvestmentRateStatus
 ) {
     @Column(nullable = false)
     val updatedDate = LocalDateTime.now()
