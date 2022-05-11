@@ -30,6 +30,8 @@ dependencies {
     testImplementation("org.springframework:spring-mock:2.0.8")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.cucumber:cucumber-java:7.0.0")
+    testImplementation("io.cucumber:cucumber-junit:7.0.0")
 }
 
 tasks.test {
