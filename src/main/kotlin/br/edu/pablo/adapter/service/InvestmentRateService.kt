@@ -1,19 +1,24 @@
 package br.edu.pablo.adapter.service
 
+import br.edu.pablo.adapter.repository.InvestmentRateRepository
 import br.edu.pablo.domain.entity.InvestmentRate
-import br.edu.pablo.domain.entity.InvestmentRateParams
 import br.edu.pablo.domain.entity.InvestmentRateStatus
-import br.edu.pablo.usecase.constant.PERCENTAGE_RATE_RANGE
+import br.edu.pablo.domain.entity.InvestmentRateStatusParams
+import br.edu.pablo.usecase.constant.PERCENTAGE_RATE
 import org.springframework.stereotype.Service
-import kotlin.random.Random
+import java.time.LocalDate
 
 @Service
-class InvestmentRateService {
+class InvestmentRateService(
+    val investmentRateRepository: InvestmentRateRepository,
+    val investmentRateStatusService: InvestmentRateStatusService
+) {
 
     fun getUpdatedRate(): InvestmentRate {
-        return InvestmentRate(
-            null, "CDI", Random.nextDouble(PERCENTAGE_RATE_RANGE.first, PERCENTAGE_RATE_RANGE.second),
-            InvestmentRateStatus(null, InvestmentRateParams.UPDATED.name)
+        val newInvestmentRate = InvestmentRate(
+            null, "CDI",
+            PERCENTAGE_RATE,
+            InvestmentRateStatus(null, InvestmentRateStatusParams.UPDATED.name)
         )
         return save(newInvestmentRate)
     }
