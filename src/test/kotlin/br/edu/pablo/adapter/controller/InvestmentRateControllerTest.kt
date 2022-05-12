@@ -20,7 +20,7 @@ internal class InvestmentRateControllerTest {
 
     @Test
     fun mustGetInvestmentRateWithSuccess() {
-        every { investmentRateServiceMock.getUpdatedRate() } returns InvestmentRateFactory().createWithRandomPercentage()
+        every { investmentRateServiceMock.getUpdatedRate() } returns InvestmentRateFactory().createWithDefaultPercentage()
 
         investmentRateController.getUpdatedRate()
 
