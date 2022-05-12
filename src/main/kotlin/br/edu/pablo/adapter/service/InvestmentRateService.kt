@@ -4,6 +4,7 @@ import br.edu.pablo.adapter.repository.InvestmentRateRepository
 import br.edu.pablo.domain.entity.InvestmentRate
 import br.edu.pablo.domain.entity.InvestmentRateStatus
 import br.edu.pablo.domain.entity.InvestmentRateStatusParams
+import br.edu.pablo.usecase.constant.ONE_DAY
 import br.edu.pablo.usecase.constant.PERCENTAGE_RATE
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -38,7 +39,7 @@ class InvestmentRateService(
 
     fun updateToOutdatedStatus() {
         val outdatedStatus = investmentRateStatusService.findByDescription(InvestmentRateStatusParams.OUTDATED.name).get()
-        val investmentsRateToUpdate = findAll().filter { it.updatedDate.toLocalDate() < LocalDate.now() }
+        val investmentsRateToUpdate = findEligibleToStatusUpdate()
         investmentsRateToUpdate.forEach {
             it.status = outdatedStatus
         }
