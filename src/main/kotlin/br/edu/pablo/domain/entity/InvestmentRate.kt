@@ -22,8 +22,8 @@ class InvestmentRate(
     val percentage: Double,
 
     @ManyToOne
-    val status: InvestmentRateStatus
+    var status: InvestmentRateStatus
 ) {
     @Column(nullable = false)
-    val updatedDate = LocalDateTime.now()
+    var updatedDate = LocalDateTime.now()
 }
