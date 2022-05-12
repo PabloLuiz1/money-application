@@ -31,6 +31,11 @@ class InvestmentRateService(
         return investmentRateRepository.findAll()
     }
 
+    fun findEligibleToStatusUpdate(): MutableList<InvestmentRate> {
+        val yesterdayDateTime = LocalDate.now().atStartOfDay().minusDays(ONE_DAY)
+        return investmentRateRepository.findInvestmentRateByUpdatedDateBefore(yesterdayDateTime)
+    }
+
     fun updateToOutdatedStatus() {
         val outdatedStatus = investmentRateStatusService.findByDescription(InvestmentRateStatusParams.OUTDATED.name).get()
         val investmentsRateToUpdate = findAll().filter { it.updatedDate.toLocalDate() < LocalDate.now() }
