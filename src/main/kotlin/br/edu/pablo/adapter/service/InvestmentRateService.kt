@@ -19,7 +19,7 @@ class InvestmentRateService(
         val newInvestmentRate = InvestmentRate(
             null, "CDI",
             PERCENTAGE_RATE,
-            InvestmentRateStatus(null, InvestmentRateStatusParams.UPDATED.name)
+            InvestmentRateStatus(null, InvestmentRateStatusParams.UPDATED.value)
         )
         return save(newInvestmentRate)
     }
