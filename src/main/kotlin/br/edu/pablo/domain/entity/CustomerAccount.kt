@@ -18,5 +18,5 @@ class CustomerAccount(
     val customer: Customer,
 
     @Column(nullable = false)
-    val balance: Double
+    var balance: Double
 )
