@@ -1,5 +1,6 @@
 package br.edu.pablo.domain.entity
 
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -22,7 +23,7 @@ class RevenueMoney(
     val investmentRate: InvestmentRate,
 
     @Column(nullable = false)
-    val amount: Double
+    var amount: BigDecimal
 ) {
     @Column(nullable = false)
     val updatedDate = LocalDateTime.now()
