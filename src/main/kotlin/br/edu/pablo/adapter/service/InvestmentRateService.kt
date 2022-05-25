@@ -5,9 +5,11 @@ import br.edu.pablo.domain.entity.InvestmentRate
 import br.edu.pablo.domain.entity.InvestmentRateStatus
 import br.edu.pablo.domain.entity.InvestmentRateStatusParams
 import br.edu.pablo.usecase.constant.ONE_DAY
-import br.edu.pablo.usecase.constant.PERCENTAGE_RATE
+import br.edu.pablo.usecase.constant.PERCENTAGE_RATE_MAX
+import br.edu.pablo.usecase.constant.PERCENTAGE_RATE_MIN
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import kotlin.random.Random
 
 @Service
 class InvestmentRateService(
@@ -48,5 +50,14 @@ class InvestmentRateService(
         investmentsRateToUpdate.forEach {
             investmentRateRepository.save(it)
         }
+    }
+
+    fun getRandomPercentageRate(): Double {
+        return Random.nextDouble(PERCENTAGE_RATE_MIN, PERCENTAGE_RATE_MAX)
+    }
+
+    fun findInvestmentRateUpdated(): InvestmentRate {
+        val updatedStatus = investmentRateStatusService.findByDescription(InvestmentRateStatusParams.UPDATED.value).get()
+        return investmentRateRepository.findInvestmentRateByStatus(updatedStatus)
     }
 }
