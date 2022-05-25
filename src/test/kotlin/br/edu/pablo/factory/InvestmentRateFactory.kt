@@ -16,11 +16,11 @@ class InvestmentRateFactory {
     }
 
     fun createWithDefaultPercentage(): InvestmentRate {
-        return InvestmentRate(ID, DESCRIPTION, PERCENTAGE_RATE, STATUS_UPDATED)
+        return InvestmentRate(ID, DESCRIPTION, PERCENTAGE_RATE, STATUS_UPDATED, LocalDate.now().minusDays(ONE_DAY))
     }
 
     fun createOutdatedRate(): InvestmentRate {
-        val investmentRate = InvestmentRate(ID, DESCRIPTION, PERCENTAGE_RATE, STATUS_UPDATED)
+        val investmentRate = InvestmentRate(ID, DESCRIPTION, PERCENTAGE_RATE, STATUS_UPDATED, LocalDate.now().minusDays(ONE_DAY))
         investmentRate.updatedDate = LocalDateTime.now().minusDays(ONE_DAY)
         return investmentRate
     }
