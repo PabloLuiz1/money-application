@@ -20,9 +20,11 @@ class InvestmentRateService(
     fun getUpdatedRate(): InvestmentRate {
         val newInvestmentRate = InvestmentRate(
             null, "CDI",
-            PERCENTAGE_RATE,
-            InvestmentRateStatus(null, InvestmentRateStatusParams.UPDATED.value)
+            getRandomPercentageRate(),
+            InvestmentRateStatus(null, InvestmentRateStatusParams.UPDATED.value),
+            LocalDate.now().minusDays(ONE_DAY)
         )
+        updateToOutdatedStatus()
         return save(newInvestmentRate)
     }
 
@@ -37,12 +39,12 @@ class InvestmentRateService(
     }
 
     fun findEligibleToStatusUpdate(): MutableList<InvestmentRate> {
-        val yesterdayDateTime = LocalDate.now().atStartOfDay().minusDays(ONE_DAY)
+        val yesterdayDateTime = LocalDate.now().atStartOfDay()
         return investmentRateRepository.findInvestmentRateByUpdatedDateBefore(yesterdayDateTime)
     }
 
     fun updateToOutdatedStatus() {
-        val outdatedStatus = investmentRateStatusService.findByDescription(InvestmentRateStatusParams.OUTDATED.name).get()
+        val outdatedStatus = investmentRateStatusService.findByDescription(InvestmentRateStatusParams.OUTDATED.value).get()
         val investmentsRateToUpdate = findEligibleToStatusUpdate()
         investmentsRateToUpdate.forEach {
             it.status = outdatedStatus
