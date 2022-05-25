@@ -1,5 +1,6 @@
 package br.edu.pablo.domain.entity
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -22,7 +23,10 @@ class InvestmentRate(
     val percentage: Double,
 
     @ManyToOne
-    var status: InvestmentRateStatus
+    var status: InvestmentRateStatus,
+
+    @Column(nullable = false)
+    val effectiveDate: LocalDate
 ) {
     @Column(nullable = false)
     var updatedDate = LocalDateTime.now()
