@@ -5,6 +5,7 @@ import br.edu.pablo.domain.entity.InvestmentRateStatus
 import br.edu.pablo.domain.entity.InvestmentRateStatusParams
 import br.edu.pablo.usecase.constant.ONE_DAY
 import br.edu.pablo.usecase.constant.PERCENTAGE_RATE
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class InvestmentRateFactory {
