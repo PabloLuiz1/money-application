@@ -16,7 +16,10 @@ class RevenueMoney(
     val id: Long? = null,
 
     @ManyToOne
-    val customer: CustomerAccount,
+    val customerAccount: CustomerAccount,
+
+    @ManyToOne
+    val investmentRate: InvestmentRate,
 
     @Column(nullable = false)
     val amount: Double
