@@ -15,6 +15,6 @@ INSERT INTO public.customer_account(balance, customer_id)
 VALUES (100.0, 1);
 
 --INVESTMENT_RATE
-INSERT INTO public.investment_rate(description, effective_date, percentage, updated_date, status_id)
-VALUES ('CDI', '2022-05-19', 0.047, NOW(), 1);
+--INSERT INTO public.investment_rate(effective_date, percentage, updated_date, status_id)
+--VALUES ('2022-05-19', 0.047, NOW(), 1);
 
