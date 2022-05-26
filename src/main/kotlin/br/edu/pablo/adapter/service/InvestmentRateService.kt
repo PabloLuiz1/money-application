@@ -34,6 +34,10 @@ class InvestmentRateService(
         return investmentRateRepository.save(investmentRate)
     }
 
+    fun saveAll(investmentRateList: MutableList<InvestmentRate>) {
+        investmentRateRepository.saveAll(investmentRateList)
+    }
+
     fun findAll(): MutableList<InvestmentRate> {
         return investmentRateRepository.findAll()
     }
