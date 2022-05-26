@@ -60,19 +60,19 @@ internal class RevenueMoneyServiceTest {
 
     @Test
     fun mustFindByCustomerWithSuccess() {
-        every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccount_Customer(any()) } returns mutableListOf(revenueMoneyMock)
+        every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) } returns mutableListOf(revenueMoneyMock)
 
         revenueMoneyService.findByCustomer(customerMock.id!!)
 
-        verify(exactly = ONCE) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccount_Customer(any()) }
+        verify(exactly = ONCE) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) }
     }
 
     @Test
     fun mustFindByCustomerWithError() {
-        every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccount_Customer(any()) } throws NullPointerException()
+        every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) } throws NullPointerException()
 
         Assert.assertThrows(NullPointerException::class.java) { revenueMoneyService.findByCustomer(customerMock.id!!) }
 
-        verify(exactly = ONCE) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccount_Customer(any()) }
+        verify(exactly = ONCE) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) }
     }
 }
