@@ -29,8 +29,8 @@ class InvestmentRateService(
     }
 
     fun save(investmentRate: InvestmentRate): InvestmentRate {
-        val investmentStatus = investmentRateStatusService.findByDescription(investmentRate.status.description)
-        investmentRate.status = investmentStatus.get()
+        investmentRate.status = investmentRateStatusService.findByDescription(investmentRate.status.description).get()
+        updateToOutdatedStatus()
         return investmentRateRepository.save(investmentRate)
     }
 
