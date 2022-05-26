@@ -53,9 +53,10 @@ class InvestmentRateService(
         investmentsRateToUpdate.forEach {
             it.status = outdatedStatus
         }
-        investmentsRateToUpdate.forEach {
+        saveAll(investmentsRateToUpdate)
+        /* investmentsRateToUpdate.forEach {
             investmentRateRepository.save(it)
-        }
+        } */
     }
 
     fun getRandomPercentageRate(): Double {
