@@ -27,7 +27,7 @@ class RevenueMoneyService(
 
     fun findByCustomer(idCustomer: Long): MutableList<RevenueMoney> {
         val customer = customerService.findById(idCustomer)
-        return revenueMoneyRepository.findRevenueMoniesByCustomerAccount_Customer(customer.get())
+        return revenueMoneyRepository.findRevenueMoniesByCustomerAccountCustomer(customer.get())
     }
 
     fun calculateRevenueAmount(revenueMoney: RevenueMoney): BigDecimal {
