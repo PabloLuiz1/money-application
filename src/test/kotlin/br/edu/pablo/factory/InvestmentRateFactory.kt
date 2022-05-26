@@ -12,16 +12,15 @@ class InvestmentRateFactory {
 
     companion object {
         private const val ID = 1L
-        private const val DESCRIPTION = "CDI"
         private val STATUS_UPDATED = InvestmentRateStatus(1L, InvestmentRateStatusParams.UPDATED.name)
     }
 
     fun createWithDefaultPercentage(): InvestmentRate {
-        return InvestmentRate(ID, DESCRIPTION, PERCENTAGE_RATE, STATUS_UPDATED, LocalDate.now().minusDays(ONE_DAY))
+        return InvestmentRate(ID, PERCENTAGE_RATE, STATUS_UPDATED, LocalDate.now().minusDays(ONE_DAY))
     }
 
     fun createOutdatedRate(): InvestmentRate {
-        val investmentRate = InvestmentRate(ID, DESCRIPTION, PERCENTAGE_RATE, STATUS_UPDATED, LocalDate.now().minusDays(ONE_DAY))
+        val investmentRate = InvestmentRate(ID, PERCENTAGE_RATE, STATUS_UPDATED, LocalDate.now().minusDays(ONE_DAY))
         investmentRate.updatedDate = LocalDateTime.now().minusDays(ONE_DAY)
         return investmentRate
     }
