@@ -17,9 +17,6 @@ class InvestmentRate(
     val id: Long? = null,
 
     @Column(nullable = false)
-    val description: String,
-
-    @Column(nullable = false)
     val percentage: Double,
 
     @ManyToOne
