@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RevenueMoneyRepository : JpaRepository<RevenueMoney, Long> {
 
-    fun findRevenueMoniesByCustomerAccount_Customer(customer: Customer): MutableList<RevenueMoney>
+    fun findRevenueMoniesByCustomerAccountCustomer(customer: Customer): MutableList<RevenueMoney>
 }
