@@ -5,6 +5,7 @@ import br.edu.pablo.factory.InvestmentRateFactory
 import br.edu.pablo.factory.InvestmentRateStatusFactory
 import br.edu.pablo.usecase.constant.NEVER
 import br.edu.pablo.usecase.constant.ONCE
+import br.edu.pablo.usecase.constant.TWICE
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
@@ -19,47 +20,63 @@ import java.util.*
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 internal class InvestmentRateServiceTest {
     private val investmentRateRepositoryMock = mockk<InvestmentRateRepository>()
-    private val investmentRateStatusService = mockk<InvestmentRateStatusService>()
-    private val investmentRateService = InvestmentRateService(investmentRateRepositoryMock, investmentRateStatusService)
+    private val investmentRateStatusServiceMock = mockk<InvestmentRateStatusService>()
+    private val investmentRateService = InvestmentRateService(investmentRateRepositoryMock, investmentRateStatusServiceMock)
     private val investmentRateMock = InvestmentRateFactory().createWithDefaultPercentage()
     private val investmentRateOutdatedMock = InvestmentRateFactory().createOutdatedRate()
-    private val investmentRateStatusUpdated = InvestmentRateStatusFactory().createUpdated()
-    private val investmentRateStatusOutdated = InvestmentRateStatusFactory().createOutdated()
-
-    @Test
-    fun mustGetUpdatedRateWithSuccess() {
-        every { investmentRateRepositoryMock.save(any()) } returns investmentRateMock
-
-        investmentRateService.getUpdatedRate()
-
-        verify(exactly = ONCE) { investmentRateRepositoryMock.save(any()) }
-    }
-
-    @Test
-    fun mustGetUpdatedRateWithError() {
-        every { investmentRateRepositoryMock.save(any()) } throws NullPointerException()
-
-        Assert.assertThrows(NullPointerException::class.java) { investmentRateService.getUpdatedRate() }
-
-        verify(exactly = ONCE) { investmentRateRepositoryMock.save(any()) }
-    }
+    private val investmentRateStatusUpdatedMock = InvestmentRateStatusFactory().createUpdated()
+    private val investmentRateStatusOutdatedMock = InvestmentRateStatusFactory().createOutdated()
 
     @Test
     fun mustSaveInvestmentRateWithSuccess() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusUpdatedMock)
+        every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf(investmentRateMock)
         every { investmentRateRepositoryMock.save(any()) } returns investmentRateMock
 
         investmentRateService.save(investmentRateMock)
 
-        verify(exactly = ONCE) { investmentRateRepositoryMock.save(any()) }
+        verify(exactly = TWICE) { investmentRateStatusServiceMock.findByDescription(any()) }
+        verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
+        verify(exactly = TWICE) { investmentRateRepositoryMock.save(any()) }
     }
 
     @Test
-    fun mustSaveInvestmentRateWithError() {
+    fun mustNotSaveInvestmentRateWithErrorOnFindRateStatus() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.empty()
+        every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf(investmentRateMock)
+        every { investmentRateRepositoryMock.save(any()) } returns investmentRateMock
+
+        Assert.assertThrows(NoSuchElementException::class.java) { investmentRateService.save(investmentRateMock) }
+
+        verify(exactly = ONCE) { investmentRateStatusServiceMock.findByDescription(any()) }
+        verify(exactly = NEVER) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
+        verify(exactly = NEVER) { investmentRateRepositoryMock.save(any()) }
+    }
+
+    @Test
+    fun mustNotSaveInvestmentRateWithErrorOnListInvestmentRateToUpdate() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusUpdatedMock)
+        every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } throws NullPointerException()
+        every { investmentRateRepositoryMock.save(any()) } returns investmentRateMock
+
+        Assert.assertThrows(NullPointerException::class.java) { investmentRateService.save(investmentRateMock) }
+
+        verify(exactly = TWICE) { investmentRateStatusServiceMock.findByDescription(any()) }
+        verify(exactly = NEVER) { investmentRateRepositoryMock.save(any()) }
+        verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
+    }
+
+    @Test
+    fun mustNotSaveInvestmentRateWithError() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusUpdatedMock)
+        every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf(investmentRateMock)
         every { investmentRateRepositoryMock.save(any()) } throws NullPointerException()
 
         Assert.assertThrows(NullPointerException::class.java) { investmentRateService.save(investmentRateMock) }
 
+        verify(exactly = TWICE) { investmentRateStatusServiceMock.findByDescription(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.save(any()) }
+        verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
     }
 
     @Test
@@ -81,66 +98,66 @@ internal class InvestmentRateServiceTest {
     }
 
     @Test
-    fun mustUpdateToOutdateStatusWithSuccess() {
-        every { investmentRateStatusService.findByDescription(any()) } returns Optional.of(investmentRateStatusOutdated)
+    fun mustUpdateToOutdatedStatusWithSuccess() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusOutdatedMock)
         every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf(investmentRateOutdatedMock)
         every { investmentRateRepositoryMock.save(any()) } returns investmentRateOutdatedMock
 
         investmentRateService.updateToOutdatedStatus()
 
-        verify(exactly = ONCE) { investmentRateStatusService.findByDescription(any()) }
+        verify(exactly = ONCE) { investmentRateStatusServiceMock.findByDescription(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.save(any()) }
     }
 
     @Test
-    fun mustNotUpdateToOutdateStatusWithSuccess() {
-        every { investmentRateStatusService.findByDescription(any()) } returns Optional.of(investmentRateStatusUpdated)
+    fun mustNotUpdateToOutdatedStatusWithSuccess() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusUpdatedMock)
         every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf()
         every { investmentRateRepositoryMock.save(any()) } returns investmentRateMock
 
         investmentRateService.updateToOutdatedStatus()
 
-        verify(exactly = ONCE) { investmentRateStatusService.findByDescription(any()) }
+        verify(exactly = ONCE) { investmentRateStatusServiceMock.findByDescription(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
         verify(exactly = NEVER) { investmentRateRepositoryMock.save(any()) }
     }
 
     @Test
-    fun mustNotUpdateToOutdateStatusWithErrorOnStatusRepository() {
-        every { investmentRateStatusService.findByDescription(any()) } throws NullPointerException()
+    fun mustNotUpdateToOutdatedStatusWithErrorOnFindByDescription() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } throws NullPointerException()
         every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf(investmentRateOutdatedMock)
         every { investmentRateRepositoryMock.save(any()) } returns investmentRateOutdatedMock
 
         Assert.assertThrows(NullPointerException::class.java) { investmentRateService.updateToOutdatedStatus() }
 
-        verify(exactly = ONCE) { investmentRateStatusService.findByDescription(any()) }
+        verify(exactly = ONCE) { investmentRateStatusServiceMock.findByDescription(any()) }
         verify(exactly = NEVER) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
         verify(exactly = NEVER) { investmentRateRepositoryMock.save(any()) }
     }
 
     @Test
-    fun mustNotUpdateToOutdateStatusWithErrorOnRateRepositoryFindAll() {
-        every { investmentRateStatusService.findByDescription(any()) } returns Optional.of(investmentRateStatusOutdated)
+    fun mustNotUpdateToOutdatedStatusWithErrorOnFindRateOnRepository() {
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusOutdatedMock)
         every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } throws NullPointerException()
         every { investmentRateRepositoryMock.save(any()) } returns investmentRateOutdatedMock
 
         Assert.assertThrows(NullPointerException::class.java) { investmentRateService.updateToOutdatedStatus() }
 
-        verify(exactly = ONCE) { investmentRateStatusService.findByDescription(any()) }
+        verify(exactly = ONCE) { investmentRateStatusServiceMock.findByDescription(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
         verify(exactly = NEVER) { investmentRateRepositoryMock.save(any()) }
     }
 
     @Test
     fun mustNotUpdateToOutdateStatusWithErrorOnRateRepositorySave() {
-        every { investmentRateStatusService.findByDescription(any()) } returns Optional.of(investmentRateStatusOutdated)
+        every { investmentRateStatusServiceMock.findByDescription(any()) } returns Optional.of(investmentRateStatusOutdatedMock)
         every { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) } returns mutableListOf(investmentRateOutdatedMock)
         every { investmentRateRepositoryMock.save(any()) } throws NullPointerException()
 
         Assert.assertThrows(NullPointerException::class.java) { investmentRateService.updateToOutdatedStatus() }
 
-        verify(exactly = ONCE) { investmentRateStatusService.findByDescription(any()) }
+        verify(exactly = ONCE) { investmentRateStatusServiceMock.findByDescription(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.findInvestmentRateByUpdatedDateBefore(any()) }
         verify(exactly = ONCE) { investmentRateRepositoryMock.save(any()) }
     }
