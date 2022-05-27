@@ -3,6 +3,7 @@ package br.edu.pablo.adapter.service
 import br.edu.pablo.adapter.repository.RevenueMoneyRepository
 import br.edu.pablo.factory.CustomerFactory
 import br.edu.pablo.factory.RevenueMoneyFactory
+import br.edu.pablo.usecase.constant.NEVER
 import br.edu.pablo.usecase.constant.ONCE
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -12,6 +13,7 @@ import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -60,19 +62,34 @@ internal class RevenueMoneyServiceTest {
 
     @Test
     fun mustFindByCustomerWithSuccess() {
+        every { customerServiceMock.findById(any()) } returns Optional.of(customerMock)
         every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) } returns mutableListOf(revenueMoneyMock)
 
         revenueMoneyService.findByCustomer(customerMock.id!!)
 
+        verify(exactly = ONCE) { customerServiceMock.findById(any()) }
         verify(exactly = ONCE) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) }
     }
 
     @Test
-    fun mustFindByCustomerWithError() {
+    fun mustNotFindByCustomerWithErrorOnFindRevenueMonies() {
+        every { customerServiceMock.findById(any()) } returns Optional.of(customerMock)
         every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) } throws NullPointerException()
 
         Assert.assertThrows(NullPointerException::class.java) { revenueMoneyService.findByCustomer(customerMock.id!!) }
 
+        verify(exactly = ONCE) { customerServiceMock.findById(any()) }
         verify(exactly = ONCE) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) }
+    }
+
+    @Test
+    fun mustNotFindByCustomerWithErrorOnFindCustomer() {
+        every { customerServiceMock.findById(any()) } returns Optional.empty()
+        every { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) } throws NoSuchElementException()
+
+        Assert.assertThrows(NoSuchElementException::class.java) { revenueMoneyService.findByCustomer(customerMock.id!!) }
+
+        verify(exactly = ONCE) { customerServiceMock.findById(any()) }
+        verify(exactly = NEVER) { revenueMoneyRepositoryMock.findRevenueMoniesByCustomerAccountCustomer(any()) }
     }
 }
