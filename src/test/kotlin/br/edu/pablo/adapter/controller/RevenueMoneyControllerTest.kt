@@ -1,5 +1,6 @@
 package br.edu.pablo.adapter.controller
 
+import br.edu.pablo.adapter.service.CustomerService
 import br.edu.pablo.adapter.service.RevenueMoneyService
 import br.edu.pablo.factory.CustomerDtoFactory
 import br.edu.pablo.factory.RevenueMoneyFactory
@@ -17,7 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 internal class RevenueMoneyControllerTest {
     private val revenueMoneyServiceMock = mockk<RevenueMoneyService>()
-    private val revenueMoneyController = RevenueMoneyController(revenueMoneyServiceMock)
+    private val customerServiceMock = mockk<CustomerService>()
+    private val revenueMoneyController = RevenueMoneyController(revenueMoneyServiceMock, customerServiceMock)
     private val revenueMoneyMock = RevenueMoneyFactory().create()
     private val customerDtoMock = CustomerDtoFactory().create()
 
